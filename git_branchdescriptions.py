@@ -10,6 +10,7 @@ import sys
 import optparse
 import re
 import git
+from git.errors import GitCommandError
 
 __version__ = (0, 0, 1)
 
@@ -23,9 +24,13 @@ class BranchDescriptions(object):
         self.args = args
 
     def set(self, name, value=None):
-        if not value:
-            value = name
-            name = self.repo.active_branch
+        if not name:
+            try:
+                name = self.repo.active_branch
+            except GitCommandError:
+                print 'Error: apparently not on an active branch.'
+                return False
+
         self.repo.git.execute(('git',
                                'config',
                                'branchdescriptions.%s' %
@@ -61,11 +66,11 @@ class BranchDescriptions(object):
                 if desc:
                     branch = '%s - %s' % (branch, desc)
                 print branch
-
+        return True
 
     def run(self):
         if self.options.set:
-            return self.set(' '.join(self.args))
+            return self.set(self.options.branch, ' '.join(self.args))
         else:
             return self.show()
 
@@ -74,7 +79,7 @@ def _santitize_branch_name(name):
     Strips down a git branch name to plain text.
     """
     s = name.strip('*').strip().split()[0] # get first part of string sans '*'
-    s = _strip_ascii_escaped(s) # remove color formatting if it exists
+    s = _strip_ansi_escaped_chars(s) # remove color formatting if it exists
     return s.replace('/', '---')
 
 def _strip_ansi_escaped_chars(s):
@@ -84,13 +89,16 @@ def _strip_ansi_escaped_chars(s):
     esc = '\x1b.+?m'
     return re.sub(esc+'$', '', re.sub('^'+esc, '', s))
 
-if __name__ == '__main__':
+def execute_from_command_line(argv=None):
+    """
+    """
 
     op = optparse.OptionParser(version=__version__, option_list=(
         optparse.Option('-v', '--verbosity', action="store_true"),
         optparse.Option('-r', '--remotes', action="store_true"),
         optparse.Option('-a', '--all', action="store_true"),
         optparse.Option('-s', '--set', action="store_true"),
+        optparse.Option('-b', '--branch'),
         optparse.Option('--no-color', action="store_true"),
     ))
 
@@ -100,4 +108,8 @@ if __name__ == '__main__':
         op.error('use --set to set branch description')
 
     app = BranchDescriptions(options=options, args=args)
-    sys.exit(app.run())
+    retval = app.run()
+    sys.exit(retval == False)
+
+if __name__ == '__main__':
+    execute_from_command_line(sys.argv)
