@@ -90,16 +90,22 @@ def _strip_ansi_escaped_chars(s):
     return re.sub(esc+'$', '', re.sub('^'+esc, '', s))
 
 def execute_from_command_line(argv=None):
-    """
-    """
-
-    op = optparse.OptionParser(version=__version__, option_list=(
-        optparse.Option('-v', '--verbosity', action="store_true"),
-        optparse.Option('-r', '--remotes', action="store_true"),
-        optparse.Option('-a', '--all', action="store_true"),
-        optparse.Option('-s', '--set', action="store_true"),
-        optparse.Option('-b', '--branch'),
-        optparse.Option('--no-color', action="store_true"),
+    usage = """usage: %prog [options]
+Use --set to set the branch's description.
+Example: git branchdescriptions --set This branch addresses issue foo."""
+    op = optparse.OptionParser(usage=usage, version=__version__, option_list=(
+        optparse.Option('-v', '--verbosity', action="store_true",
+            help='Show sha1 and commit subject lines'),
+        optparse.Option('-r', '--remotes', action="store_true",
+            help='List remote branches'),
+        optparse.Option('-a', '--all', action="store_true",
+            help='List both local and remote branches'),
+        optparse.Option('-s', '--set', action="store_true",
+            help="Use to set the branch's description"),
+        optparse.Option('-b', '--branch',
+            help='Which branch to operate on. Optional, assumes current branch'),
+        optparse.Option('--no-color', action="store_true",
+            help='Skip color formatting (for dumb terminals)'),
     ))
 
     options, args = op.parse_args()

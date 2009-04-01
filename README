@@ -1,0 +1,42 @@
+======================
+git-branchdescriptions
+======================
+
+This is a small tool to view and set git branch descriptions.
+
+Usage
+=====
+
+When invoked without --set git-branchdescriptions shows the current local
+branches with following descriptions. The -a, -v, and -r parameters control
+which refs are shown.
+
+Assuming git-branchdescriptions is on your PATH git will pick it up and it will
+be accessible as git-branchdescriptions.
+
+Tip: git config --global alias.bd branchdescriptions
+
+git-branchdescriptions assumes current branch if branch is not provided.
+Use --set to set the branch's description.
+
+Example: git branchdescriptions --set This branch addresses issue foo.
+
+    $ git-branchdescriptions --help
+    Use --set to set the branch's description.
+    Example: git branchdescriptions --set This branch addresses issue foo.
+
+    Options:
+      -v, --verbosity       Show sha1 and commit subject lines
+      -r, --remotes         List remote branches
+      -a, --all             List both local and remote branches
+      -s, --set             Use to set the branch's description
+      -b BRANCH, --branch=BRANCH
+                            Which branch to operate on. Optional, assumes current
+                            branch
+      --no-color            Skip color formatting (for dumb terminals)
+      --version             show program's version number and exit
+      -h, --help            show this help message and exit
+
+Thanks
+======
+Thanks to Ben Spaulding for expressing this common need.
