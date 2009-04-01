@@ -28,13 +28,19 @@ class BranchDescriptions(object):
             name = self.repo.active_branch
         self.repo.git.execute(('git',
                                'config',
-                               'branchdescriptions.%s' % name,
+                               'branchdescriptions.%s' %
+                                   _santitize_branch_name(name),
                                value,
                                ))
         return True
 
     def get(self, name):
-        return self.repo.git.execute(('git config --get branchdescriptions.%s' % name).split(), with_exceptions=False)
+        return self.repo.git.execute(('git',
+                                      'config',
+                                      '--get',
+                                      'branchdescriptions.%s' %
+                                          _santitize_branch_name(name)),
+                                      with_exceptions=False)
 
     def show(self, *args):
         command = ['git', 'branch']
@@ -50,7 +56,7 @@ class BranchDescriptions(object):
 
         for branch in branches:
             if branch:
-                name = branch.strip('*').strip().split()[0]
+                name = _santitize_branch_name(branch)
                 desc = self.get(name)
                 if desc:
                     branch = '%s - %s' % (branch, desc)
@@ -63,6 +69,20 @@ class BranchDescriptions(object):
         else:
             return self.show()
 
+def _santitize_branch_name(name):
+    """
+    Strips down a git branch name to plain text.
+    """
+    s = name.strip('*').strip().split()[0] # get first part of string sans '*'
+    s = _strip_ascii_escaped(s) # remove color formatting if it exists
+    return s.replace('/', '---')
+
+def _strip_ansi_escaped_chars(s):
+    """
+    Strips ANSI escaped characters from a string.
+    """
+    esc = '\x1b.+?m'
+    return re.sub(esc+'$', '', re.sub('^'+esc, '', s))
 
 if __name__ == '__main__':
 
