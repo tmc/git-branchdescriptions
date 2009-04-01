@@ -1,8 +1,14 @@
 #!/usr/bin/env python
+"""
+git-branchdescriptions
+
+Author: Travis Cline <travis.cline@gmail.com>
+License: Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
+"""
 import os
 import sys
-import re
 import optparse
+import re
 import git
 
 __version__ = (0, 0, 1)
@@ -32,6 +38,8 @@ class BranchDescriptions(object):
 
     def show(self, *args):
         command = ['git', 'branch']
+        if not self.options.no_color:
+            command.append('--color')
         if self.options.verbosity:
             command.append('-v')
         if self.options.remotes:
@@ -63,6 +71,7 @@ if __name__ == '__main__':
         optparse.Option('-r', '--remotes', action="store_true"),
         optparse.Option('-a', '--all', action="store_true"),
         optparse.Option('-s', '--set', action="store_true"),
+        optparse.Option('--no-color', action="store_true"),
     ))
 
     options, args = op.parse_args()
