@@ -15,7 +15,7 @@ try: # conditional import to allow setup.py to grab __version__
 except ImportError:
     pass
 
-__version__ = (0, 0, 2)
+__version__ = (0, 0, 3)
 
 class BranchDescriptions(object):
 
