@@ -9,8 +9,11 @@ import os
 import sys
 import optparse
 import re
-import git
-from git.errors import GitCommandError
+try: # conditional import to allow setup.py to grab __version__
+    import git
+    from git.errors import GitCommandError
+except ImportError:
+    pass
 
 __version__ = (0, 0, 2)
 
