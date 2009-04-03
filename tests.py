@@ -31,4 +31,6 @@ class TestBranchDescriptions(TestCase):
 class TestUtilityFunctions(TestCase):
 
     def test_santitize_branch_name(self):
+        self.assertEqual('ref---', _santitize_branch_name('ref_'))
+        self.assertEqual('ref---', _santitize_branch_name('ref/'))
         self.assertEqual('ref', _santitize_branch_name('* \x1b[32mref\x1b[m'))

@@ -12,7 +12,7 @@ import re
 import git
 from git.errors import GitCommandError
 
-__version__ = (0, 0, 1)
+__version__ = (0, 0, 2)
 
 class BranchDescriptions(object):
 
@@ -80,7 +80,10 @@ def _santitize_branch_name(name):
     """
     s = name.strip('*').strip().split()[0] # get first part of string sans '*'
     s = _strip_ansi_escaped_chars(s) # remove color formatting if it exists
-    return s.replace('/', '---')
+    rep = '---'
+    for to_rep in ['/', '_']:
+        s = s.replace(to_rep, rep)
+    return s
 
 def _strip_ansi_escaped_chars(s):
     """
